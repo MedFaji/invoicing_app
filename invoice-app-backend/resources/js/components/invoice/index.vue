@@ -2,7 +2,8 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 
-const invoices = ref([]);
+let invoices = ref([]);
+let searchInvoice = ref([]);
 
 onMounted(async () => {
     getInvoices();
@@ -13,7 +14,14 @@ const getInvoices = async () => {
     console.log("response", response);
     invoices.value = response.data.invoices;
 };
+
+const search = async () => {
+    let response = await axios.get("/api/search?s=" + searchInvoice.value);
+    console.log("response", response);
+    invoices.value = response.data.invoices;
+};
 </script>
+
 <template>
     <div class="container">
         <div class="invoices">
@@ -59,6 +67,8 @@ const getInvoices = async () => {
                             class="table--search--input"
                             type="text"
                             placeholder="Search invoice"
+                            v-model="searchInvoice"
+                            @keyup="search()"
                         />
                     </div>
                 </div>
@@ -90,7 +100,7 @@ const getInvoices = async () => {
                     <p>$ {{ item.total }}</p>
                 </div>
                 <div class="table--items" v-else>
-                    <p>There is no data</p>
+                    <p>NO DATA FOUND...</p>
                 </div>
             </div>
         </div>
